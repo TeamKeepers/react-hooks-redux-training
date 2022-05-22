@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Card from "../components/Card";
 import WelcomeBlock from "../components/WelcomeBlock";
 
 const Home = () => {
 
   const [show, setShow] = useState(false);
-  const [data, setData] = useState(null);
+
+  /**
+   * We will not use local state anymore
+   * To replace it, we need 2 methods: the data itself and the way to update it
+   * data = we will call the useSelector
+   * update = we will call the dispatch thanks to useDispatch
+   */
+  // const [data, setData] = useState(null);
+  const data = useSelector(state => state.PersonaList);
+  const dispatch = useDispatch();
 
   useEffect(() => {
 
@@ -16,12 +26,15 @@ const Home = () => {
 
       const result = await fetch('https://rickandmortyapi.com/api/character/');
       const personas = await result.json();
-      setData(personas.results);
+      
+      dispatch({
+        type: 'ADD_PERSONA_LIST',
+        payload: personas.results
+      })
     }
     
     fetchPersonas()
-  }, []);
-  // use `show` & check the Network tab in the console
+  }, [dispatch]);
 
   /**
    * useEffect lifecycle
