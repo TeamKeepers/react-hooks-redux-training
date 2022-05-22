@@ -1,52 +1,58 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Card from "../components/Card";
 import WelcomeBlock from "../components/WelcomeBlock";
 
-class Home extends React.Component {
+const Home = () => {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      show: false,
-      data: null
+  const [show, setShow] = useState(false);
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+
+    const fetchPersonas = async () => {
+
+      // Simulate server latency
+      await new Promise(r => setTimeout(r, 2000));
+
+      const result = await fetch('https://rickandmortyapi.com/api/character/');
+      const personas = await result.json();
+      setData(personas.results);
     }
-  }
-
-  async componentDidMount() {
-
-    // Simulate a 2 sec latency from the server
-    await new Promise(r => setTimeout(r, 2000));
-
-    fetch('https://rickandmortyapi.com/api/character/')
-      .then(response => response.json())
-      .then((data) => {
-
-        // Easily debug our app
-        // debugger;
-
-        this.setState({ data: data.results })
-      })
     
-    
-  }
+    fetchPersonas()
+  }, []);
+  // use `show` & check the Network tab in the console
 
-  render() {
-    return (
+  /**
+   * useEffect lifecycle
+   * 
+   * ComponentDidMount + ComponentDidUpdate
+   * useEffect(() => { ... magic gere })
+   * 
+   * ComponentDidMount
+   * useEffect(() => { ... magic gere }, [])
+   * 
+   * ComponentDidUpdate
+   * useEffect(() => { ... magic gere }, [myVarToWatch])
+   * 
+   * You can use several useEffect in the same component if needed !
+   */
+
+  return (
       <main style={{textAlign: 'center'}}>
         <h1 
-          onClick={() => this.setState({show: !this.state.show})}
+          onClick={() => setShow(!show)}
         >
-          My Class Components
+          My Functional Components
         </h1>
         {
-          this.state.show && <WelcomeBlock />
+          show && <WelcomeBlock />
         }
         {
-          this.state.data ? <Card data={this.state.data} /> : <h3>Loading ...</h3>
+          data ? <Card data={data} /> : <h3>Loading ...</h3>
         }
       </main>
     )
-  }
 }
 
 export default Home;
